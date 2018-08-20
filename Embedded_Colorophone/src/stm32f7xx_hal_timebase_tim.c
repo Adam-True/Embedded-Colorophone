@@ -1,18 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_hal_timebase_tim.c
-  * @author  MCD Application Team
-  * @brief   HAL time base based on the hardware TIM Template.
-  *    
-  *          This file overrides the native HAL time base functions (defined as weak)
-  *          the TIM time base:
-  *           + Intializes the TIM peripheral generate a Period elapsed Event each 1ms
-  *           + HAL_IncTick is called inside HAL_TIM_PeriodElapsedCallback ie each 1ms
-  * 
+  * @file    stm32f7xx_hal_timebase_TIM.c 
+  * @brief   HAL time base based on the hardware TIM.
   ******************************************************************************
-  * @attention
+  ** This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -41,76 +38,68 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
-/** @addtogroup STM32F7xx_HAL_Driver
+#include "stm32f7xx_hal_tim.h"
+/** @addtogroup STM32F7xx_HAL_Examples
   * @{
   */
 
-/** @addtogroup HAL_TimeBase_TIM
+/** @addtogroup HAL_TimeBase
   * @{
-  */
+  */ 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef        htim6;
+TIM_HandleTypeDef        htim6; 
+uint32_t                 uwIncrementState = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 /**
   * @brief  This function configures the TIM6 as a time base source. 
-  *         The time source is configured to have 1ms time base with a dedicated 
+  *         The time source is configured  to have 1ms time base with a dedicated 
   *         Tick interrupt priority. 
   * @note   This function is called  automatically at the beginning of program after
   *         reset by HAL_Init() or at any time when clock is configured, by HAL_RCC_ClockConfig(). 
-  * @param  TickPriority: Tick interrupt priority.
+  * @param  TickPriority: Tick interrupt priorty.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_InitTick (uint32_t TickPriority)
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
   RCC_ClkInitTypeDef    clkconfig;
-  uint32_t              uwTimclock, uwAPB1Prescaler = 0U;
-  uint32_t              uwPrescalerValue = 0U;
+  uint32_t              uwTimclock = 0;
+  uint32_t              uwPrescalerValue = 0;
   uint32_t              pFLatency;
-
-    /*Configure the TIM6 IRQ priority */
-  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, TickPriority ,0U);
-
+  
+  /*Configure the TIM6 IRQ priority */
+  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, TickPriority ,0); 
+  
   /* Enable the TIM6 global Interrupt */
-  HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
-
+  HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn); 
+  
   /* Enable TIM6 clock */
   __HAL_RCC_TIM6_CLK_ENABLE();
-
+  
   /* Get clock configuration */
   HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
-
-  /* Get APB1 prescaler */
-  uwAPB1Prescaler = clkconfig.APB1CLKDivider;
-
+  
   /* Compute TIM6 clock */
-  if (uwAPB1Prescaler == RCC_HCLK_DIV1)
-  {
-    uwTimclock = HAL_RCC_GetPCLK1Freq();
-  }
-  else
-  {
-    uwTimclock = 2*HAL_RCC_GetPCLK1Freq();
-  }
-
+  uwTimclock = 2*HAL_RCC_GetPCLK1Freq();
+   
   /* Compute the prescaler value to have TIM6 counter clock equal to 1MHz */
-  uwPrescalerValue = (uint32_t) 2*((uwTimclock / 1000000U) - 1U); //fixme added a factor 2
-
+  uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000) - 1);
+  
   /* Initialize TIM6 */
   htim6.Instance = TIM6;
-
+  
   /* Initialize TIMx peripheral as follow:
   + Period = [(TIM6CLK/1000) - 1]. to have a (1/1000) s time base.
   + Prescaler = (uwTimclock/1000000 - 1) to have a 1MHz counter clock.
   + ClockDivision = 0
   + Counter direction = Up
   */
-  htim6.Init.Period = (1000000U / 1000U) - 1U;
+  htim6.Init.Period = (1000000 / 1000) - 1;
   htim6.Init.Prescaler = uwPrescalerValue;
   htim6.Init.ClockDivision = 0;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -119,7 +108,7 @@ HAL_StatusTypeDef HAL_InitTick (uint32_t TickPriority)
     /* Start the TIM time Base generation in interrupt mode */
     return HAL_TIM_Base_Start_IT(&htim6);
   }
-
+  
   /* Return function status */
   return HAL_ERROR;
 }
@@ -133,7 +122,7 @@ HAL_StatusTypeDef HAL_InitTick (uint32_t TickPriority)
 void HAL_SuspendTick(void)
 {
   /* Disable TIM6 update Interrupt */
-  __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);
+  __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);                                                  
 }
 
 /**
@@ -150,10 +139,10 @@ void HAL_ResumeTick(void)
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

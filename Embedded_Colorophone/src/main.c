@@ -1,626 +1,422 @@
+
 /**
   ******************************************************************************
-  * @file    USB_Host/MSC_Standalone/Src/main.c
-  * @author  MCD Application Team
-  * @brief   USB host Mass storage demo main file
+  * @file           : main.c
+  * @brief          : Main program body
   ******************************************************************************
-  * @attention
+  ** This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics International N.V.
-  * All rights reserved.</center></h2>
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted, provided that the following conditions are met:
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  * 1. Redistribution of source code must retain the above copyright notice,
-  *    this list of conditions and the following disclaimer.
-  * 2. Redistributions in binary form must reproduce the above copyright notice,
-  *    this list of conditions and the following disclaimer in the documentation
-  *    and/or other materials provided with the distribution.
-  * 3. Neither the name of STMicroelectronics nor the names of other
-  *    contributors to this software may be used to endorse or promote products
-  *    derived from this software without specific written permission.
-  * 4. This software, including modifications and/or derivative works of this
-  *    software, must execute solely and exclusively on microcontroller or
-  *    microprocessor devices manufactured by or for STMicroelectronics.
-  * 5. Redistribution and use of this software other than as permitted under
-  *    this license is void and will automatically terminate your rights under
-  *    this license.
-  *
-  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT
-  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-  * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
-  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT
-  * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
-
-/* Includes ----------------------------------------------------------------- */
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "color.h"
-#include "stevenslaw.h"
+#include "stm32f7xx_hal.h"
 
-#include "../Audio/audiohandle.h"
-#include "../Audio/audiosamples.h"
-#include "../Audio/wavehandler.h"
-#include "../Audio/audioselector.h"
+/* USER CODE BEGIN Includes */
 
-// Play buffer definition for the audio output
-#define PLAY_BUFF_SIZE       2048
-uint16_t                     PlayBuff[PLAY_BUFF_SIZE];
+/* USER CODE END Includes */
 
-// Mail boxes
-osMailQId sampleDMAQueue;
+/* Private variables ---------------------------------------------------------*/
 
-// Thread & timer definitions
-osThreadId audioHandle;
-static void audioThread(void const * argument);
+LTDC_HandleTypeDef hltdc;
 
-// Functions
-static void SystemClock_Config(void);
-static void Playback_Init(void);
-static void CPU_CACHE_Enable(void);
+SAI_HandleTypeDef hsai_BlockA1;
+DMA_HandleTypeDef hdma_sai1_a;
 
-// Audio sample and SD card necessities
-char SD_Path[4];
-FATFS fs;
-AudioSelector redSel;
-AudioSelector greenSel;
-AudioSelector blueSel;
-AudioSelector whiteSel;
+SD_HandleTypeDef hsd2;
 
+HCD_HandleTypeDef hhcd_USB_OTG_HS;
 
-/* Private typedef ---------------------------------------------------------- */
-/* Private define ----------------------------------------------------------- */
-/* Private macro ------------------------------------------------------------ */
-/* Private variables -------------------------------------------------------- */
-CAM_ApplicationTypeDef Appli_state = APPLICATION_IDLE;
-#if (USBH_USE_OS == 1)
-osMessageQId AppliEvent;
-#endif //USBH_USE_OS == 1
+/* USER CODE BEGIN PV */
+/* Private variables ---------------------------------------------------------*/
 
+/* USER CODE END PV */
 
-uint8_t  lcd_status = LCD_OK;
-
-/* Private function prototypes ---------------------------------------------- */
-static void SystemClock_Config(void);
-static void USBH_UserProcess(USBH_HandleTypeDef * phost, uint8_t id);
-static void CAM_InitApplication(void);
-static void StartThread(void const *argument);
-static void CPU_CACHE_Enable(void);
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_LTDC_Init(void);
+static void MX_SAI1_Init(void);
+static void MX_SDMMC2_SD_Init(void);
+static void MX_USB_OTG_HS_HCD_Init(void);
 
+/* USER CODE BEGIN PFP */
+/* Private function prototypes -----------------------------------------------*/
 
-/* Private functions -------------------------------------------------------- */
+/* USER CODE END PFP */
+
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
 
 /**
-  * @brief  Main program
-  * @param  None
+  * @brief  The application entry point.
+  *
   * @retval None
   */
 int main(void)
 {
-	/* This project calls firstly two functions in order to configure MPU feature
-	and to enable the CPU Cache, respectively MPU_Config() and CPU_CACHE_Enable()*/
+  /* USER CODE BEGIN 1 */
 
-	/* Enable the CPU Cache */
-	CPU_CACHE_Enable();
+  /* USER CODE END 1 */
 
-	/* STM32F7xx HAL library initialization: - Configure the Flash ART
-	* accelerator on ITCM interface - Configure the Systick to generate an
-	* interrupt each 1 msec - Set NVIC Group Priority to 4 - Low Level
-	* Initialization */
-	HAL_Init();
+  /* MCU Configuration----------------------------------------------------------*/
 
-	/* Configure the System clock to have a frequency of 200 Mhz */
-	SystemClock_Config();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* Configure LED1 and LED2 */
-	BSP_LED_Init(LED1);
-	BSP_LED_Init(LED2);
+  /* USER CODE BEGIN Init */
 
-	/* Initialize playback */
-	Playback_Init();
+  /* USER CODE END Init */
 
-	if(FATFS_LinkDriver(&SD_Driver, SD_Path) != 0)
-	{
-		// Failure to link SD card driver
-		Error_Handler(ERROR_SD_DRIVER);
-	}
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/*
-	 * Start the different tasks
-	 */
+  /* USER CODE BEGIN SysInit */
 
-	//Call to start the tracing
-	vTraceEnable(TRC_START);
+  /* USER CODE END SysInit */
 
-	/* Main Application Task */
-	osThreadDef(USER_Thread, StartThread, osPriorityAboveNormal, 0, 8 * configMINIMAL_STACK_SIZE);
-	osThreadCreate(osThread(USER_Thread), NULL);
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_LTDC_Init();
+  MX_SAI1_Init();
+  MX_SDMMC2_SD_Init();
+  MX_USB_OTG_HS_HCD_Init();
+  /* USER CODE BEGIN 2 */
 
-	/* Stream RAW Parser Task */
-	osThreadDef(Raw_Stream_Parser, RawParserThread, osPriorityAboveNormal, 0, 8 * configMINIMAL_STACK_SIZE);
-	osThreadCreate(osThread(Raw_Stream_Parser), NULL);
+  /* USER CODE END 2 */
 
-	/* Audio generation Task */
-	osThreadDef(Audio, audioThread, osPriorityAboveNormal, 0, 2 * configMINIMAL_STACK_SIZE);
-	audioHandle = osThreadCreate(osThread(Audio), NULL);
-
-	/* Display Task */
-	osThreadDef(Display, screenDisplayerThread, osPriorityAboveNormal, 0, 1 * configMINIMAL_STACK_SIZE);
-	osThreadCreate(osThread(Display), NULL);
-
-	/* Create Application Queue */
-	osMessageQDef(osqueue, 1, uint16_t);
-	AppliEvent = osMessageCreate(osMessageQ(osqueue), NULL);
-
-	/* Create Image Data Mail Box */
-	osMailQDef(mail_box, 10, imgPacketTypedef);
-	imgMailBox = osMailCreate(osMailQ(mail_box), NULL);
-
-	// Define mail box for updating sound
- 	osMailQDef(SamplePositionQueue, (uint32_t) 1, uint16_t);
-	sampleDMAQueue = osMailCreate(osMailQ(SamplePositionQueue), NULL);
-
-	//Define mail box for upadting the color
-	osMailQDef(ColorQueue, (uint32_t) 1, Color);
-	colorQueue = osMailCreate(osMailQ(ColorQueue), NULL);
-
-	//Define mail box for upadting the screen
-	osMailQDef(DisplayQueue, (uint32_t) 10, uint32_t);
-	displayQueue = osMailCreate(osMailQ(DisplayQueue), NULL);
-
-	/* Start scheduler */
-	osKernelStart();
-
-	/* We should never get here as control is now taken by the scheduler */
-	for (;;);
-}
-
-void audioThread(void const * argument)
-{
-  uint16_t* position;
-  Color c;
-  Color* pC;
-
-  osEvent event;
-
-  // Initialize the data buffer
-    for(int i=0; i < PLAY_BUFF_SIZE; i++)
-    {
-      PlayBuff[i] = 0;
-    }
-
-    c.rgbwValues.r = 0;
-    c.rgbwValues.g = 0;
-    c.rgbwValues.b = 0;
-    c.rgbwValues.w = 0;
-
-    // If no link to SD Card Driver, the AudioSelector_initialiser will detect it
-    f_mount(&fs, (TCHAR const*)"",1);
-
-    AudioSelector_initialise(&redSel, "red.wav", red_length, red);
-    AudioSelector_initialise(&greenSel, "green.wav", green_length, green);
-    AudioSelector_initialise(&blueSel, "blue.wav", blue_length, blue);
-    AudioSelector_initialise(&whiteSel, "white.wav", white_length, white);
-
-  // Start loopback
-  for(;;)
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
   {
-    // Wait until DMA has finished a full or half transfer
-    event = osMailGet(sampleDMAQueue, osWaitForever);
-    if(event.status == osEventMail)
-    {
-      // If a full transfer has occurred, fill second half of buffer
-      // If a half transfer has occurred, fill first half of buffer
-      position = event.value.p;
-      BSP_LED_Toggle(LED2);
 
-      // If a colour has been updated then it can be saved
-      event = osMailGet(colorQueue, 0);
-      if(event.status == osEventMail)
-      {
-        pC = event.value.p;
-        c = *pC;
-        osMailFree(colorQueue, pC);
-      }
+  /* USER CODE END WHILE */
 
-      // Update the first or the second part of the buffer
-      for(int i = 0; i < PLAY_BUFF_SIZE/2; i++)
-      {
-        // TODO change this addition from a simple addition to a saturating addition
-        PlayBuff[i+(*position)] = (AudioSelector_getNext(&redSel)*stevensLawConversionTable[c.rgbwValues.r])/256;
-        PlayBuff[i+(*position)] += (AudioSelector_getNext(&greenSel)*stevensLawConversionTable[c.rgbwValues.g])/256;
-        PlayBuff[i+(*position)] += (AudioSelector_getNext(&blueSel)*stevensLawConversionTable[c.rgbwValues.b])/256;
-        PlayBuff[i+(*position)] += (AudioSelector_getNext(&whiteSel)*stevensLawConversionTable[c.rgbwValues.w])/256;
-      }
+  /* USER CODE BEGIN 3 */
 
-      osMailFree(sampleDMAQueue, position);
-      BSP_LED_Toggle(LED2);
-    }
   }
+  /* USER CODE END 3 */
+
 }
 
 /**
-  * @brief  Start task
-  * @param  pvParameters not used
-  * @retval None
-  */
-static void StartThread(void const *argument)
-{
-  osEvent event;
-
-  /* Init CAM Application */
-  CAM_InitApplication();
-
-  /* Start Host Library */
-  USBH_Init(&hUSBHost, USBH_UserProcess, 0);
-
-  /* Add Supported Class */
-  USBH_RegisterClass(&hUSBHost, USBH_CAM_CLASS);
-
-  /* Start Host Process */
-  USBH_Start(&hUSBHost);
-
-  for (;;)
-  {
-    event = osMessageGet(AppliEvent, osWaitForever);
-
-    if (event.status == osEventMessage)
-    {
-      switch (event.value.v)
-      {
-		  case APPLICATION_DISCONNECT:
-			Appli_state = APPLICATION_DISCONNECT;
-			USBH_ReEnumerate(&hUSBHost);//TODO check if this makes sense. This should be only called once thanks to the mailbox.
-			break;
-
-		  case APPLICATION_READY:
-			Appli_state = APPLICATION_READY;
-			break;
-
-		  case APPLICATION_START:
-			Appli_state = APPLICATION_START;
-			break;
-
-		  default:
-			break;
-      }
-    }
-  }
-}
-
-/**
-  * @brief  MSC application Init.
-  * @param  None
-  * @retval None
-  */
-static void CAM_InitApplication(void)
-{
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-
-	/* Initialize the LCD   */
-	lcd_status = BSP_LCD_Init();
-	if(lcd_status != LCD_OK)
-	{
-		OnError_Handler();
-	}
-
-	BSP_LCD_LayerDefaultInit(0, LCD_FB_START_ADDRESS);
-	BSP_LCD_SelectLayer(0);
-
-	/* Clear LCD */
-	BSP_LCD_Clear(LCD_COLOR_BLACK);
-
-	/* Enable the display */
-	BSP_LCD_DisplayOn();
-
-	/* Initialize the LCD Log module */
-	LCD_LOG_Init();
-
-	#ifdef USE_USB_HS
-	LCD_LOG_SetHeader((uint8_t *) " USB OTG HS CAM Host");
-	#else
-	LCD_LOG_SetHeader((uint8_t *) " USB OTG FS CAM Host");
-	#endif
-
-	LCD_UsrLog("USB Host library started.\n");
-}
-
-/**
-  * @brief  User Process
-  * @param  phost: Host Handle
-  * @param  id: Host Library user message ID
-  * @retval None
-  */
-static void USBH_UserProcess(USBH_HandleTypeDef * phost, uint8_t id)
-{
-	switch (id)
-	{
-		case HOST_USER_SELECT_CONFIGURATION:
-		  break;
-
-		case HOST_USER_DISCONNECTION:
-		  osMessagePut(AppliEvent, APPLICATION_DISCONNECT, 0);
-		  break;
-
-		case HOST_USER_CLASS_ACTIVE:
-		  osMessagePut(AppliEvent, APPLICATION_READY, 0);
-		  break;
-
-		case HOST_USER_CONNECTION:
-		  osMessagePut(AppliEvent, APPLICATION_START, 0);
-		  break;
-
-		default:
-		  break;
-	}
-}
-
-/**
-  * @brief This function provides accurate delay (in milliseconds) based
-  *        on SysTick counter flag.
-  * @note This function is declared as __weak to be overwritten in case of other
-  *       implementations in user file.
-  * @param Delay: specifies the delay time length, in milliseconds.
-  * @retval None
-  */
-
-/*void HAL_Delay(__IO uint32_t Delay)
-{
-  while (Delay)
-  {
-    if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
-    {
-      Delay--;
-    }
-  }
-}*/
-
-static void MX_GPIO_Init(void)
-{
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-
-	GPIO_InitTypeDef GPIO_InitStruct;
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-
-	/*Configure GPIO pin : PC6 */
-	GPIO_InitStruct.Pin = GPIO_PIN_6;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-	/*Configure GPIO pin : PC7 */
-	GPIO_InitStruct.Pin = GPIO_PIN_7;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-}
-
-/**
-  * @brief  Toggles LEDs to show user input state.
-  * @param  None
-  * @retval None
-  */
-void Toggle_Leds(void)
-{
-  static uint32_t ticks;
-  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
-
-  if (ticks++ == 100)
-  {
-    BSP_LED_Toggle(LED1);
-    BSP_LED_Toggle(LED2);
-    ticks = 0;
-  }
-}
-
-/**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 200000000
-  *            HCLK(Hz)                       = 200000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 4
-  *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 25000000
-  *            PLL_M                          = 25
-  *            PLL_N                          = 400
-  *            PLL_P                          = 2
-  *            PLLSAI_N                       = 384
-  *            PLLSAI_P                       = 8
-  *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
-  *            Flash Latency(WS)              = 7
-  * @param  None
+  * @brief System Clock Configuration
   * @retval None
   */
 void SystemClock_Config(void)
 {
-	RCC_ClkInitTypeDef RCC_ClkInitStruct;
-	RCC_OscInitTypeDef RCC_OscInitStruct;
-	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 
-	/* Enable Power Control clock */
-	__HAL_RCC_PWR_CLK_ENABLE();
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 
-	/* The voltage scaling allows optimizing the power consumption when the device is
-	   clocked below the maximum system frequency, to update the voltage scaling value
-	   regarding system frequency refer to product datasheet.  */
-	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+    /**Configure the main internal regulator output voltage 
+    */
+  __HAL_RCC_PWR_CLK_ENABLE();
 
-	/* Enable HSE Oscillator and activate PLL with HSE as source */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 25;
-	RCC_OscInitStruct.PLL.PLLN = 432;
-	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 8;
-	RCC_OscInitStruct.PLL.PLLR = 7;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	{
-		Error_Handler(ERROR_HAL_CLOCK_CONFIG);
-	}
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-	/* Activate the OverDrive to reach the 200 Mhz Frequency */
-	if (HAL_PWREx_EnableOverDrive() != HAL_OK)
-	{
-		Error_Handler(ERROR_HAL_CLOCK_CONFIG);
-	}
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 432;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 8;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
 
-	/* Select PLLSAI output as USB clock source */
-	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CLK48;
-	PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLLSAIP;
-	PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
-	PeriphClkInitStruct.PLLSAI.PLLSAIQ = 4;
-	PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV4;
-	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-	{
-		Error_Handler(ERROR_HAL_CLOCK_CONFIG);
-	}
+    /**Activate the Over-Drive mode 
+    */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
 
-	/* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
-	* clocks dividers */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK |
-								RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK)
-	{
-		Error_Handler(ERROR_HAL_CLOCK_CONFIG);
-	}
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_SAI1
+                              |RCC_PERIPHCLK_SDMMC2|RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
+  PeriphClkInitStruct.PLLSAI.PLLSAIQ = 4;
+  PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV4;
+  PeriphClkInitStruct.PLLSAIDivQ = 1;
+  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
+  PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLLSAI;
+  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLLSAIP;
+  PeriphClkInitStruct.Sdmmc2ClockSelection = RCC_SDMMC2CLKSOURCE_CLK48;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure the Systick interrupt time 
+    */
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+    /**Configure the Systick 
+    */
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+  /* SysTick_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
+/* LTDC init function */
+static void MX_LTDC_Init(void)
+{
+
+  LTDC_LayerCfgTypeDef pLayerCfg;
+  LTDC_LayerCfgTypeDef pLayerCfg1;
+
+  hltdc.Instance = LTDC;
+  hltdc.Init.HSPolarity = LTDC_HSPOLARITY_AL;
+  hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AL;
+  hltdc.Init.DEPolarity = LTDC_DEPOLARITY_AL;
+  hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
+  hltdc.Init.HorizontalSync = 7;
+  hltdc.Init.VerticalSync = 3;
+  hltdc.Init.AccumulatedHBP = 14;
+  hltdc.Init.AccumulatedVBP = 5;
+  hltdc.Init.AccumulatedActiveW = 654;
+  hltdc.Init.AccumulatedActiveH = 485;
+  hltdc.Init.TotalWidth = 660;
+  hltdc.Init.TotalHeigh = 487;
+  hltdc.Init.Backcolor.Blue = 0;
+  hltdc.Init.Backcolor.Green = 0;
+  hltdc.Init.Backcolor.Red = 0;
+  if (HAL_LTDC_Init(&hltdc) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  pLayerCfg.WindowX0 = 0;
+  pLayerCfg.WindowX1 = 0;
+  pLayerCfg.WindowY0 = 0;
+  pLayerCfg.WindowY1 = 0;
+  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg.Alpha = 0;
+  pLayerCfg.Alpha0 = 0;
+  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerCfg.FBStartAdress = 0;
+  pLayerCfg.ImageWidth = 0;
+  pLayerCfg.ImageHeight = 0;
+  pLayerCfg.Backcolor.Blue = 0;
+  pLayerCfg.Backcolor.Green = 0;
+  pLayerCfg.Backcolor.Red = 0;
+  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  pLayerCfg1.WindowX0 = 0;
+  pLayerCfg1.WindowX1 = 0;
+  pLayerCfg1.WindowY0 = 0;
+  pLayerCfg1.WindowY1 = 0;
+  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg1.Alpha = 0;
+  pLayerCfg1.Alpha0 = 0;
+  pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerCfg1.FBStartAdress = 0;
+  pLayerCfg1.ImageWidth = 0;
+  pLayerCfg1.ImageHeight = 0;
+  pLayerCfg1.Backcolor.Blue = 0;
+  pLayerCfg1.Backcolor.Green = 0;
+  pLayerCfg1.Backcolor.Red = 0;
+  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg1, 1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* SAI1 init function */
+static void MX_SAI1_Init(void)
+{
+
+  hsai_BlockA1.Instance = SAI1_Block_A;
+  hsai_BlockA1.Init.AudioMode = SAI_MODEMASTER_TX;
+  hsai_BlockA1.Init.Synchro = SAI_ASYNCHRONOUS;
+  hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
+  hsai_BlockA1.Init.NoDivider = SAI_MASTERDIVIDER_ENABLE;
+  hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
+  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_192K;
+  hsai_BlockA1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
+  hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
+  hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
+  hsai_BlockA1.Init.TriState = SAI_OUTPUT_NOTRELEASED;
+  if (HAL_SAI_InitProtocol(&hsai_BlockA1, SAI_I2S_STANDARD, SAI_PROTOCOL_DATASIZE_16BIT, 2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* SDMMC2 init function */
+static void MX_SDMMC2_SD_Init(void)
+{
+
+  hsd2.Instance = SDMMC2;
+  hsd2.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
+  hsd2.Init.ClockBypass = SDMMC_CLOCK_BYPASS_DISABLE;
+  hsd2.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
+  hsd2.Init.BusWide = SDMMC_BUS_WIDE_1B;
+  hsd2.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
+  hsd2.Init.ClockDiv = 0;
+  if (HAL_SD_Init(&hsd2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* USB_OTG_HS init function */
+static void MX_USB_OTG_HS_HCD_Init(void)
+{
+
+  hhcd_USB_OTG_HS.Instance = USB_OTG_HS;
+  hhcd_USB_OTG_HS.Init.Host_channels = 12;
+  hhcd_USB_OTG_HS.Init.speed = HCD_SPEED_HIGH;
+  hhcd_USB_OTG_HS.Init.dma_enable = DISABLE;
+  hhcd_USB_OTG_HS.Init.phy_itface = USB_OTG_ULPI_PHY;
+  hhcd_USB_OTG_HS.Init.Sof_enable = DISABLE;
+  hhcd_USB_OTG_HS.Init.low_power_enable = DISABLE;
+  hhcd_USB_OTG_HS.Init.vbus_sensing_enable = DISABLE;
+  hhcd_USB_OTG_HS.Init.use_external_vbus = ENABLE;
+  if (HAL_HCD_Init(&hhcd_USB_OTG_HS) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+
+}
+
+/** Configure pins as 
+        * Analog 
+        * Input 
+        * Output
+        * EVENT_OUT
+        * EXTI
+*/
+static void MX_GPIO_Init(void)
+{
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
 /**
-  * @brief  Playback initialization
-  * @param  None
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
   * @retval None
   */
-static void Playback_Init(void)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if(BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 20, AUDIO_FREQUENCY_11K) == AUDIO_ERROR) // TODO understand why 11kHz works here
-  {
-    Error_Handler(ERROR_AUDIO_INIT);
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM6) {
+    HAL_IncTick();
   }
-  if(BSP_AUDIO_OUT_Play((uint16_t*)&PlayBuff[0], 2*PLAY_BUFF_SIZE) == AUDIO_ERROR)  // Size is in bytes
-  {
-    Error_Handler(ERROR_AUDIO_PLAY);
-  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
 }
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  None
+  * @param  file: The file name as string.
+  * @param  line: The line in file as a number.
   * @retval None
   */
-void Error_Handler(ErrorCode e)
+void _Error_Handler(char *file, int line)
 {
-  /* User may add here some code to deal with this error */
-  while (1)
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  while(1)
   {
   }
-}
-
-/**
-  * @brief Tx Transfer completed callbacks.
-  * @param  hsai : pointer to a SAI_HandleTypeDef structure that contains
-  *                the configuration information for SAI module.
-  * @retval None
-  */
-void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
-{
-  uint16_t* val;
-  val = osMailAlloc(sampleDMAQueue, 0);
-
-  if(val != NULL)
-  {
-    *val = PLAY_BUFF_SIZE/2;
-
-    if(osMailPut(sampleDMAQueue, val) != osOK)
-    {
-      // TODO change error handling for it to not be in an interrupt
-      // Error_Handler(ERROR_AUDIO_PLAY);
-      osMailFree(sampleDMAQueue, val);
-    }
-  }
-}
-
-/**
-  * @brief Tx Transfer Half completed callbacks
-  * @param  hsai : pointer to a SAI_HandleTypeDef structure that contains
-  *                the configuration information for SAI module.
-  * @retval None
-  */
-void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-{
-  uint16_t* val;
-  val = osMailAlloc(sampleDMAQueue, 0);
-  if(val != NULL)
-  {
-    *val = 0;
-    if(osMailPut(sampleDMAQueue, val) != osOK)
-    {
-      // TODO change error handling for it to not be in an interrupt
-      // Error_Handler(ERROR_AUDIO_PLAY);
-      osMailFree(sampleDMAQueue, val);
-    }
-  }
-}
-
-/**
-  * @brief  CPU L1-Cache enable.
-  * @param  None
-  * @retval None
-  */
-static void CPU_CACHE_Enable(void)
-{
-  /* Enable I-Cache */
-  SCB_EnableICache();
-
-  /* Enable D-Cache */
-  SCB_EnableDCache();
-}
-
-void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
-{
-  Error_Handler(ERROR_STACK_OVERFLOW);
-}
-
-
-/**
-  * @brief  On Error Handler.
-  * @param  None
-  * @retval None
-  */
-void OnError_Handler(void)
-{
-  //BSP_LED_On(LED1);
-  while(1) { ; } /* Blocking on error */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -631,17 +427,21 @@ void OnError_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t * file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line
-   * number, ex: printf("Wrong parameters value: file %s on line %d\r\n", file,
-   * line) */
-
-  /* Infinite loop */
-  while (1)
-  {
-  }
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
 }
-#endif
+#endif /* USE_FULL_ASSERT */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
