@@ -95,6 +95,7 @@ void USBH_UserProcess(USBH_HandleTypeDef * phost, uint8_t id)
 
 		case HOST_USER_CLASS_ACTIVE:
 		  osMessagePut(AppliEvent, APPLICATION_READY, 0);
+		  BSP_LCD_Clear(0xFF808080);
 		  break;
 
 		case HOST_USER_CONNECTION:

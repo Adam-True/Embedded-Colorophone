@@ -561,6 +561,7 @@ USBH_StatusTypeDef USBH_CAM_NegociateRequests(USBH_HandleTypeDef* phost, CAM_Han
 					//allow the host process state machine to move on the the HOST_CLASS state from where the bgnd function is gonna be called
 					status = USBH_OK;
 					CAM_Handle->ctl_state = CAM_REQ_IDLE;
+					phost->pUser(phost, HOST_USER_CLASS_ACTIVE);
 				}
 		break;
 

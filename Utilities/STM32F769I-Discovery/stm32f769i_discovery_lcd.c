@@ -977,6 +977,16 @@ void BSP_LCD_Clear(uint32_t Color)
 }
 
 /**
+  * @brief  This is a custom function to draw a filled rectangle with quick refresh rate
+  * @param  Color: Color of the background
+  */
+void BSP_LCD_QuickRect(uint32_t Color, uint32_t sizeX, uint32_t sizeY, uint32_t offset)
+{
+  /* Clear the LCD */
+  LL_FillBuffer(ActiveLayer, ((uint32_t *)(hltdc_discovery.LayerCfg[ActiveLayer].FBStartAdress) + 1000), sizeX, sizeY, offset, Color);
+}
+
+/**
   * @brief  Clears the selected line in currently active layer.
   * @param  Line: Line to be cleared
   */

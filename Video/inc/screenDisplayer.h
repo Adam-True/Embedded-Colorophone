@@ -12,6 +12,8 @@
 #include "main.h"
 #include "FreeRTOS.h"
 
+uint8_t rgb[60];
+
 void screenDisplayerThread(void const *argument);
 
 #endif /* SCREENDISPLAYER_H_ */

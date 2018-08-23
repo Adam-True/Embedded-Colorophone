@@ -351,6 +351,7 @@ sFONT    *BSP_LCD_GetFont(void);
 uint32_t BSP_LCD_ReadPixel(uint16_t Xpos, uint16_t Ypos);
 void     BSP_LCD_DrawPixel(uint16_t Xpos, uint16_t Ypos, uint32_t pixel);
 void     BSP_LCD_Clear(uint32_t Color);
+void     BSP_LCD_QuickRect(uint32_t Color, uint32_t sizeX, uint32_t sizeY, uint32_t offset);
 void     BSP_LCD_ClearStringLine(uint32_t Line);
 void     BSP_LCD_DisplayStringAtLine(uint16_t Line, uint8_t *ptr);
 void     BSP_LCD_DisplayStringAt(uint16_t Xpos, uint16_t Ypos, uint8_t *Text, Text_AlignModeTypdef Mode);
