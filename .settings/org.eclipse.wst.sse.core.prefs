@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+task-tags/enabled=true
+task-tags/taskPriorities=1,2,1,2,2,1
+task-tags/taskTags=TODO,FIXME,XXX,THIS IS STUPID,I'M A GENIUS,CAREFUL
+task-tags/use-project-settings=true
