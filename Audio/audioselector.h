@@ -20,7 +20,7 @@ typedef struct AudioSelector_s
 	WaveHandler external;
 } AudioSelector;
 
-void AudioSelector_initialise(AudioSelector* me, const char* name, audio_length l, audio_data* data);
+void AudioSelector_initialise(AudioSelector* me, const char* name, audio_length l, audio_data* data, uint32_t size);
 audio_data AudioSelector_getNext(AudioSelector* me);
 
 #endif /* AUDIOSELECTOR_H_ */

@@ -7,14 +7,14 @@
 
 #include "audioselector.h"
 
-void AudioSelector_initialise(AudioSelector* me, const char* name, audio_length l, audio_data* data)
+void AudioSelector_initialise(AudioSelector* me, const char* name, audio_length l, audio_data* data, uint32_t size)
 {
 	// Setup internal audio wave
 	me->selection = INTERNAL;
 	AudioSample_create(&me->internal, l, data);
 
 	// Setup external audio wave
-	WaveHandler_create(&me->external, name, me);
+	WaveHandler_create(&me->external, name, me, size);
 	if(WaveHandler_initialise(&me->external) == WAV_OK)
 	{
 		me->selection = EXTERNAL;

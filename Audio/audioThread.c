@@ -55,10 +55,10 @@ void audioThread(void const * argument)
     // If no link to SD Card Driver, the AudioSelector_initialiser will detect it
     f_mount(&fs, (TCHAR const*)"",1);
 
-    AudioSelector_initialise(&redSel, "red.wav", red_length, red);
-    AudioSelector_initialise(&greenSel, "green.wav", green_length, green);
-    AudioSelector_initialise(&blueSel, "blue.wav", blue_length, blue);
-    AudioSelector_initialise(&whiteSel, "white.wav", white_length, white);
+    AudioSelector_initialise(&redSel, "red.wav", red_length, red, 3000);
+    AudioSelector_initialise(&greenSel, "green.wav", green_length, green, 2000);
+    AudioSelector_initialise(&blueSel, "blue.wav", blue_length, blue, 5000);
+    AudioSelector_initialise(&whiteSel, "white.wav", white_length, white, 7000);
 
   // Start loopback
   for(;;)

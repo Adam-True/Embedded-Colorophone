@@ -7,7 +7,7 @@
 #define WAV_NOT_OK 1
 #define WAV_OK 0
 
-#define SECTOR_SIZE 4096 // This probably shouldn't be over _MAX_SS set in "ff.h"
+#define SECTOR_SIZE 4096
 #define NUMBER_OF_TRIES 6
 
 typedef struct WaveHandler_s
@@ -22,9 +22,11 @@ typedef struct WaveHandler_s
 	FIL file;
 
 	uint8_t* selector;
+
+	uint32_t sector_size;
 } WaveHandler;
 
-void WaveHandler_create(WaveHandler* me, const char* name, uint8_t* s);
+void WaveHandler_create(WaveHandler* me, const char* name, uint8_t* s, uint32_t size);
 uint8_t WaveHandler_initialise(WaveHandler* me);
 audio_data WaveHandler_getNext(WaveHandler* me);
 

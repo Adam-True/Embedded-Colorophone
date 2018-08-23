@@ -15,16 +15,17 @@ uint8_t WaveHandler_readSector(WaveHandler* me);
  * 3. Call getNext regularly
  */
 
-void WaveHandler_create(WaveHandler* me, const char* name, uint8_t* s)
+void WaveHandler_create(WaveHandler* me, const char* name, uint8_t* s, uint32_t size)
 {
 	strcpy(me->fileName, name);
 	me->selector = s;
+	me->sector_size = size;
 }
 
 uint8_t WaveHandler_initialise(WaveHandler* me)
 {
 	me->index = 0;
-	me->currentSector = pvPortMalloc(SECTOR_SIZE);
+	me->currentSector = pvPortMalloc(me->sector_size);
 	me->bytesRead = 0;
 
 	if(WaveHandler_parseHeader(me) == WAV_OK)
@@ -50,7 +51,7 @@ audio_data WaveHandler_getNext(WaveHandler* me)
 	audio_data ret = me->currentSector[me->index];
 	ret |= me->currentSector[me->index+1] << 8;			// TODO do this for cases where audio_data is a different type
 	me->index += 2;
-	if(me->index >= SECTOR_SIZE)
+	if(me->index >= me->sector_size)
 	{
 		BSP_LED_Toggle(LED1);
 		me->index = 0;
@@ -140,7 +141,7 @@ uint8_t WaveHandler_readSector(WaveHandler* me)
 			if(f_read(&me->file, headerToDispose, 44, (UINT *) &(me->bytesRead)) == FR_OK)
 			{
 				// Read the beginning of the file
-				if(f_read(&me->file, me->currentSector, SECTOR_SIZE, (UINT *) &(bytesRead)) == FR_OK)
+				if(f_read(&me->file, me->currentSector, me->sector_size, (UINT *) &(bytesRead)) == FR_OK)
 				{
 					me->bytesRead += bytesRead;
 					ret = WAV_OK;
@@ -150,7 +151,7 @@ uint8_t WaveHandler_readSector(WaveHandler* me)
 	}
 
 	// If near the end of the file
-	else if(bytesToRead < SECTOR_SIZE)
+	else if(bytesToRead < me->sector_size)
 	{
 		// Read the end of the file
 		res = f_read(&me->file, me->currentSector, bytesToRead, (UINT *) &(bytesRead));
@@ -165,7 +166,7 @@ uint8_t WaveHandler_readSector(WaveHandler* me)
 				if(f_read(&me->file, headerToDispose, 44, (UINT *) &(me->bytesRead)) == FR_OK)
 				{
 					// Read the beginning of the file
-					if(f_read(&me->file, &me->currentSector[bytesRead], SECTOR_SIZE-bytesToRead, (UINT *) &(bytesRead)) == FR_OK)
+					if(f_read(&me->file, &me->currentSector[bytesRead], me->sector_size-bytesToRead, (UINT *) &(bytesRead)) == FR_OK)
 					{
 						me->bytesRead += bytesRead;
 						ret = WAV_OK;
@@ -177,7 +178,7 @@ uint8_t WaveHandler_readSector(WaveHandler* me)
 	// Just read an uninterrupted sector
 	else
 	{
-		res = f_read(&me->file, me->currentSector, SECTOR_SIZE, (UINT *) &(bytesRead));
+		res = f_read(&me->file, me->currentSector, me->sector_size, (UINT *) &(bytesRead));
 		if(res == FR_OK)
 		{
 			me->bytesRead += bytesRead;
