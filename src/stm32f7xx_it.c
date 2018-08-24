@@ -181,7 +181,7 @@ void AUDIO_OUT_SAIx_DMAx_IRQHandler(void)
  * @brief Handles SDMMC1 DMA Rx transfer interrupt request.
  * @retval None
  */
-void BSP_SDMMC1_DMA_Rx_IRQHandler(void)
+void BSP_SDMMC_DMA_Rx_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(uSdHandle.hdmarx);
 }
@@ -190,7 +190,7 @@ void BSP_SDMMC1_DMA_Rx_IRQHandler(void)
  * @brief Handles SD1 card interrupt request.
  * @retval None
  */
-void BSP_SDMMC1_IRQHandler(void)
+void BSP_SDMMC_IRQHandler(void)
 {
   HAL_SD_IRQHandler(&uSdHandle);
 }
