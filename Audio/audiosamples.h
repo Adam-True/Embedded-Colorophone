@@ -8,6 +8,10 @@
 #ifndef AUDIOSAMPLES_H_
 #define AUDIOSAMPLES_H_
 
+/**
+ *	@file audiosamples.h
+ */
+
 const uint32_t red_length = 882;
 const uint32_t green_length = 882;
 const uint32_t blue_length = 294;

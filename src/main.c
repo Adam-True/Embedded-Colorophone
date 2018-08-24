@@ -50,9 +50,6 @@
 /* Private define ----------------------------------------------------------- */
 /* Private macro ------------------------------------------------------------ */
 /* Private variables -------------------------------------------------------- */
-
-
-
 /* Private function prototypes ---------------------------------------------- */
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -125,6 +122,10 @@ int main(void)
 	//Call to start the tracing
 	vTraceEnable(TRC_START);
 
+	/* Audio generation Task */
+	osThreadDef(Audio, audioThread, osPriorityAboveNormal, 0, 2 * configMINIMAL_STACK_SIZE);
+	audioHandle = osThreadCreate(osThread(Audio), NULL);
+
 	/* Main Application Task */
 	osThreadDef(Application_Thread, AppThread, osPriorityAboveNormal, 0, 8 * configMINIMAL_STACK_SIZE);
 	osThreadCreate(osThread(Application_Thread), NULL);
@@ -133,9 +134,6 @@ int main(void)
 	osThreadDef(Raw_Stream_Parser, RawParserThread, osPriorityAboveNormal, 0, 8 * configMINIMAL_STACK_SIZE);
 	osThreadCreate(osThread(Raw_Stream_Parser), NULL);
 
-	/* Audio generation Task */
-	osThreadDef(Audio, audioThread, osPriorityAboveNormal, 0, 2 * configMINIMAL_STACK_SIZE);
-	audioHandle = osThreadCreate(osThread(Audio), NULL);
 
 	/* Display Task */
 	osThreadDef(Display, screenDisplayerThread, osPriorityAboveNormal, 0, 1 * configMINIMAL_STACK_SIZE);
@@ -256,8 +254,9 @@ void SystemClock_Config(void)
 	RCC_OscInitStruct.PLL.PLLM = 25;
 	RCC_OscInitStruct.PLL.PLLN = 432;
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 8;
+	RCC_OscInitStruct.PLL.PLLQ = 9; //fixme pllq div for usb and sdmmc2 clock
 	RCC_OscInitStruct.PLL.PLLR = 7;
+
 	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
 	{
 		Error_Handler(ERROR_HAL_CLOCK_CONFIG);
@@ -271,7 +270,7 @@ void SystemClock_Config(void)
 
 	/* Select PLLSAI output as USB clock source */
 	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CLK48;
-	PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLLSAIP;
+	PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
 	PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
 	PeriphClkInitStruct.PLLSAI.PLLSAIQ = 4;
 	PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV4;

@@ -1003,6 +1003,11 @@ USBH_StatusTypeDef USBH_CAM_GetCur(USBH_HandleTypeDef* phost, uint8_t cont_sel, 
 					wLength = 1;
 					break;
 
+				case VC_VIDEO_POWER_MODE_CONTROL:
+					wIndex = 0x0000;
+					wLength = 1;
+					break;
+
 				default: break;
 			}
 		break;

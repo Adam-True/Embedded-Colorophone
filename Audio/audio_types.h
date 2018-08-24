@@ -10,6 +10,10 @@
 
 #include "stdio.h"
 
+/**
+ *	@file audio_types.h
+ */
+
 // Type defintions
 typedef uint32_t audio_length;
 typedef int16_t audio_data;

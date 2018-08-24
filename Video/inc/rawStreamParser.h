@@ -15,6 +15,9 @@
 #include "arm_math.h"
 #include "color.h"
 
+/**
+ *	@file rawStreamParser.h This file should be transferred to a C++ class later on.
+ */
 
 #define IMAGE_WIDTH			320
 #define IMAGE_HEIGHT		240
@@ -25,6 +28,9 @@
 #define OFFSET_TO_NEXT_ROW  0x258	//Offset to the next start of a row in the ROI in terms of bytes, with the specified IMAGE_WIDTH
 #define NB_PIXELS_IN_ROI	200
 
+/**
+ *	@enum rawParserStateTypedef
+ */
 typedef enum _RAWparserState
 {
 	PARSER_RAW_IDLE = 0,
@@ -33,6 +39,9 @@ typedef enum _RAWparserState
 	PARSER_RAW_GET_IMG,
 }rawParserStateTypedef;
 
+/**
+ *	@enum rawParserMailStateTypedef
+ */
 typedef enum _RAWparserMailState{
 	PARSER_RAW_GET_MAIL,
 	PARSER_RAW_PROCESS_MAIL
@@ -58,8 +67,15 @@ osEvent evt;
 rawParserStateTypedef parserState;
 Color* c;
 
-
+/*! \fn void RawParserThread(void const *argument)
+    \brief This function serves as thread for the stream parser
+*/
 void RawParserThread(void const *argument);
+
+
+/*! \fn void rawParserInit()
+    \brief Initialisation of the stream parser's variables. This function should later be implemented by the class constructor.
+*/
 void rawParserInit();
 
 #endif /* RAWSTREAMPARSER_H_ */

@@ -17,6 +17,9 @@
 
 #include "main.h"
 
+/**
+ *	@file audioThread.h
+ */
 
 // Play buffer definition for the audio output
 #define PLAY_BUFF_SIZE       2048
@@ -31,9 +34,31 @@ AudioSelector greenSel;
 AudioSelector blueSel;
 AudioSelector whiteSel;
 
+/*! \fn void Playback_Init(void)
+ * 	\brief
+ *
+*/
 void Playback_Init(void);
+
+
+/*! \fn void audioThread(void const * argument)
+ * 	\brief
+ *
+*/
 void audioThread(void const * argument);
+
+
+/*! \fn void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+ * 	\brief
+ *
+*/
 void BSP_AUDIO_OUT_TransferComplete_CallBack(void);
+
+
+/*! \fn void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+ * 	\brief
+ *
+*/
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void);
 
 

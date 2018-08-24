@@ -12,9 +12,16 @@
 #include "usbh_core.h"
 #include "usbh_cam.h"
 
+/**
+ *	@file application.h
+ */
+
 USBH_HandleTypeDef hUSBHost;
 
 
+/**
+ * 	@enum CAM_ApplicationTypeDef
+ */
 typedef enum
 {
   APPLICATION_IDLE = 0,
@@ -29,8 +36,22 @@ typedef enum
 osMessageQId AppliEvent;
 #endif //USBH_USE_OS == 1
 
+
+/*! \fn void USBH_UserProcess(USBH_HandleTypeDef * phost, uint8_t id)
+ *
+*/
 void USBH_UserProcess(USBH_HandleTypeDef * phost, uint8_t id);
+
+
+/*! \fn void initApplication(void)
+ *
+*/
 void initApplication(void);
+
+
+/*! \fn void AppThread(void const *argument)
+ *
+*/
 void AppThread(void const *argument);
 
 #endif /* INC_APPLICATION_H_ */

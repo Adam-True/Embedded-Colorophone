@@ -15,7 +15,7 @@
   */
 void Playback_Init(void)
 {
-  if(BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 20, AUDIO_FREQUENCY_11K) == AUDIO_ERROR) // TODO understand why 11kHz works here
+  if(BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 30, AUDIO_FREQUENCY_11K) == AUDIO_ERROR) // TODO understand why 11kHz works here
   {
     Error_Handler(ERROR_AUDIO_INIT);
   }
@@ -47,18 +47,19 @@ void audioThread(void const * argument)
       PlayBuff[i] = 0;
     }
 
-    c.rgbwValues.r = 0;
-    c.rgbwValues.g = 0;
-    c.rgbwValues.b = 0;
+    c.rgbwValues.r = 128;
+    c.rgbwValues.g = 128;
+    c.rgbwValues.b = 128;
     c.rgbwValues.w = 0;
 
     // If no link to SD Card Driver, the AudioSelector_initialiser will detect it
+    osDelay(1000);
     f_mount(&fs, (TCHAR const*)"",1);
 
-    AudioSelector_initialise(&redSel, "red.wav", red_length, red, 3000);
-    AudioSelector_initialise(&greenSel, "green.wav", green_length, green, 2000);
-    AudioSelector_initialise(&blueSel, "blue.wav", blue_length, blue, 5000);
-    AudioSelector_initialise(&whiteSel, "white.wav", white_length, white, 7000);
+    AudioSelector_initialise(&redSel, "red.wav", red_length, red, 4096);
+    AudioSelector_initialise(&greenSel, "green.wav", green_length, green, 4096);
+    AudioSelector_initialise(&blueSel, "blue.wav", blue_length, blue, 4096);
+    AudioSelector_initialise(&whiteSel, "white.wav", white_length, white, 4096);
 
   // Start loopback
   for(;;)

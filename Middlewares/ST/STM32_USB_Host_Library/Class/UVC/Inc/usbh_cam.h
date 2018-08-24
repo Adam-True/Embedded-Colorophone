@@ -176,6 +176,7 @@ typedef enum{
 	CAM_REQ_AE_PRIO,
 	CAM_REQ_FOCUS,
 	CAM_REQ_WHITE_BAL,
+	CAM_REQ_PWR,
 	CAM_REQ_ERROR
 }CAM_SetParamStateTypeDef;
 
