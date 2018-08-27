@@ -19,6 +19,9 @@
 
 /**
  *	@file audioThread.h
+ *
+ *	This file contains all the necessary functions for
+ *	the audio thread
  */
 
 // Play buffer definition for the audio output
@@ -35,28 +38,30 @@ AudioSelector blueSel;
 AudioSelector whiteSel;
 
 /*! \fn void Playback_Init(void)
- * 	\brief
+ * 	\brief Initialise and start the audio playback
  *
 */
 void Playback_Init(void);
 
 
 /*! \fn void audioThread(void const * argument)
- * 	\brief
+ * 	\brief This is the code executed by the audio thread
  *
 */
 void audioThread(void const * argument);
 
 
 /*! \fn void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
- * 	\brief
+ * 	\brief Called by the audio DMA every time it finishes
+ * 	transferring the full array to the output
  *
 */
 void BSP_AUDIO_OUT_TransferComplete_CallBack(void);
 
 
 /*! \fn void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
- * 	\brief
+ * 	\brief Called by the audio DMA every time it is halfway through
+ * 	transferring the array to the output
  *
 */
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void);

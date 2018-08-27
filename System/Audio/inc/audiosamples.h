@@ -9,7 +9,9 @@
 #define AUDIOSAMPLES_H_
 
 /**
- *	@file audiosamples.h
+ *	@file audiosamples.h File that contains internal signals for red, green, blue and white. These
+ *	values are stored as arrays in the Flash memory along with a value for their respective lengths.
+ *
  */
 
 const uint32_t red_length = 882;
