@@ -1,7 +1,7 @@
 #ifndef WAVEHANDLER_H
 #define WAVEHANDLER_H
 
-#include "audiohandle.h"
+#include <audiohandler.h>
 #include "sd_diskio.h"
 
 /**

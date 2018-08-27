@@ -5,13 +5,13 @@
  *      Author: adamt
  */
 
-#ifndef AUDIOHANDLE_H_
-#define AUDIOHANDLE_H_
+#ifndef AUDIOHANDLER_H_
+#define AUDIOHANDLER_H_
 
 #include "audio_types.h"
 
 /**
- *	@file audiohandle.h
+ *	@file audiohandle.h This file conatains the class AudioSample
  */
 
 /*
@@ -26,19 +26,19 @@
 /**
  * 	\struct
  */
-typedef struct AudioSample_s
+typedef struct AudioHandler_s
 {
 	audio_length length;  	/**<  Text here */
 	audio_length index;  	/**<  Text here */
     audio_data* data; 		/**<  Text here */
-} AudioSample;
+} AudioHandler;
 
 // Method for the creation of an audio sample
 /*! \fn void AudioSample_create(AudioSample* me, audio_length l, audio_data* d)
  * 	\brief
  *
 */
-void AudioSample_create(AudioSample* me, audio_length l, audio_data* d);
+void AudioHandler_create(AudioHandler* me, audio_length l, audio_data* d);
 
 // Method that advances through the audio sample
 // and restarts when it gets to the end
@@ -46,7 +46,7 @@ void AudioSample_create(AudioSample* me, audio_length l, audio_data* d);
  * 	\brief
  *
 */
-audio_data AudioSample_getNext(AudioSample* me);
+audio_data AudioHandler_getNext(AudioHandler* me);
 
 
 #endif /* AUDIOHANDLE_H_ */

@@ -11,7 +11,7 @@ void AudioSelector_initialise(AudioSelector* me, const char* name, audio_length 
 {
 	// Setup internal audio wave
 	me->selection = INTERNAL;
-	AudioSample_create(&me->internal, l, data);
+	AudioHandler_create(&me->internal, l, data);
 
 	// Setup external audio wave
 	WaveHandler_create(&me->external, name, me, size);
@@ -25,7 +25,7 @@ audio_data AudioSelector_getNext(AudioSelector* me)
 {
 	if(me->selection == INTERNAL)
 	{
-		return AudioSample_getNext(&me->internal);
+		return AudioHandler_getNext(&me->internal);
 	}
 	return WaveHandler_getNext(&me->external);
 }

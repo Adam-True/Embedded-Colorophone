@@ -24,7 +24,7 @@
 typedef struct AudioSelector_s
 {
 	uint8_t selection; 		/**< Text here */
-	AudioSample internal; 	/**< Text here */
+	AudioHandler internal; 	/**< Text here */
 	WaveHandler external; 	/**< Text here */
 } AudioSelector;
 

@@ -11,7 +11,10 @@
 #include "stdio.h"
 
 /**
- *	@file audio_types.h
+ *	@file audio_types.h This file contains type definitions for the audio signals.
+ *	audio_data defines single audio samples and audio_length the type for audio file sizes.
+ *	It also contains AUDIO_MIN and AUDIO_MAX to indicate the lowest and highest possible
+ *	values for an aiudio sample.
  */
 
 // Type defintions
