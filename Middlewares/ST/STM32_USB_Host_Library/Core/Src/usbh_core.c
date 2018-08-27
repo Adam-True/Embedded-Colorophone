@@ -231,7 +231,7 @@ USBH_StatusTypeDef USBH_SelectInterface(USBH_HandleTypeDef *phost, uint8_t inter
 {
   USBH_StatusTypeDef   status = USBH_OK;
   
-  if(interface < USBH_MAX_NUM_INTERFACES) //fixme had to change this, initially was phost->cfg_desc.bNumInterfaces
+  if(interface < USBH_MAX_NUM_INTERFACES) ///\fixme had to change this, initially was phost->cfg_desc.bNumInterfaces
   {
     phost->device.current_interface = interface;
     USBH_UsrLog ("Switching to Interface (#%d)", interface);
@@ -585,7 +585,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       phost->pActiveClass->DeInit(phost); 
       phost->pActiveClass = NULL;
     }     
-    phost->gState = HOST_IDLE; //fixme did this to make the core support the disconnection of the USB device
+    phost->gState = HOST_IDLE; ///\fixme did this to make the core support the disconnection of the USB device
     break;
     
   case HOST_ABORT_STATE:

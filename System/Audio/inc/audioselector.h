@@ -18,13 +18,14 @@
 #define EXTERNAL 1
 
 /**
- * 	@struct AudioSelector
+ * 	\struct
+ * 	\brief Text here
  */
 typedef struct AudioSelector_s
 {
-	uint8_t selection;
-	AudioSample internal;
-	WaveHandler external;
+	uint8_t selection; 		/**< Text here */
+	AudioSample internal; 	/**< Text here */
+	WaveHandler external; 	/**< Text here */
 } AudioSelector;
 
 // Method for the creation of an audio sample

@@ -15,7 +15,7 @@
   */
 void Playback_Init(void)
 {
-	if(BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 30, AUDIO_FREQUENCY_11K) == AUDIO_ERROR) // TODO understand why 11kHz works here
+	if(BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, 30, AUDIO_FREQUENCY_11K) == AUDIO_ERROR) ///\todo understand why 11kHz works here
 	{
 		Error_Handler(ERROR_AUDIO_INIT);
 	}
@@ -129,7 +129,7 @@ void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
 
     if(osMailPut(sampleDMAQueue, val) != osOK)
     {
-      // TODO change error handling for it to not be in an interrupt
+      ///\todo change error handling for it to not be in an interrupt
       // Error_Handler(ERROR_AUDIO_PLAY);
       osMailFree(sampleDMAQueue, val);
     }

@@ -49,7 +49,7 @@ audio_data WaveHandler_getNext(WaveHandler* me)
 
 	// Data to be returned
 	audio_data ret = me->currentSector[me->index];
-	ret |= me->currentSector[me->index+1] << 8;			// TODO do this for cases where audio_data is a different type
+	ret |= me->currentSector[me->index+1] << 8;			///\todo do this for cases where audio_data is a different type
 	me->index += 2;
 	if(me->index >= me->sector_size)
 	{
@@ -108,7 +108,7 @@ uint8_t WaveHandler_parseHeader(WaveHandler* me)
 			// Check that our system supports this kind of wave file
 			if(audioFormat==1 && numChannels==2 && sampleRate==22050 && bitsPerSample==16)
 			{
-				// TODO if it's not supported then down-sample / interpolate
+				///\todo if it's not supported then down-sample / interpolate
 				ret = WAV_OK;
 			}
 		}

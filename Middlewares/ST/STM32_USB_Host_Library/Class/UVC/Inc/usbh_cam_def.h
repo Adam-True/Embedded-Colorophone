@@ -1,45 +1,21 @@
 /*
-_ * usbh_cam_def.h
+ * usbh_cam_def.h
  *
  *  Created on: 13 juin 2018
  *      Author: Colin Cina
  */
 
 
-/** @addtogroup USBH_LIB
-  * @{
-  */
-
-/** @addtogroup USBH_LIB_CLASS
-  * @{
-  */
-
-/** @addtogroup USBH_LIB_CLASS_CAM
-  * @{
-  */
-
-/** @defgroup USBH_CAM_DEF
-  * @brief This file is includes USB descriptors
-  * @{
-  */
-
 #ifndef ST_STM32_USB_HOST_LIBRARY_CLASS_CAM_USBH_CAM_DEF_H_
 #define ST_STM32_USB_HOST_LIBRARY_CLASS_CAM_USBH_CAM_DEF_H_
 
-/** @defgroup USBH_CLASS_CAM_Exported_Macros
-  * @{
-  */
 
 #define  CS(val)				  (uint16_t)((val << 8) & 0xFF00)
 
-/** @defgroup USBH_CLASS_CAM_Exported_Defines
-  * @{
-  */
 
 /* Class Specific Request Codes */
 /* bRequest , Value */
 #define  USB_REQ_SET_CUR								0x01
-
 #define  USB_REQ_GET_CUR								0x81
 #define  USB_REQ_GET_MIN								0x82
 #define  USB_REQ_GET_MAX								0x83
@@ -268,36 +244,9 @@ _ * usbh_cam_def.h
 #define USB_DESC_VS_FRAME_FRAME_BASED						((USB_DESC_SUBTYPE_VS_FRAME_FRAME_BASED << 8) & 0xFF00)
 #define USB_DESC_VS_FORMAT_STREAM_BASED						((USB_DESC_SUBTYPE_VS_FORMAT_STREAM_BASED << 8) & 0xFF00)
 
-/**
-  * @}
-  */
-
-/** @defgroup USBH_CLASS_CAM_Exported_Types
-  * @{
-  */
-//typedefs
 
 #endif /* ST_STM32_USB_HOST_LIBRARY_CLASS_CAM_USBH_CAM_DEF_H_ */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 
 

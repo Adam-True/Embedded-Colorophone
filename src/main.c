@@ -254,7 +254,7 @@ void SystemClock_Config(void)
 	RCC_OscInitStruct.PLL.PLLM = 25;
 	RCC_OscInitStruct.PLL.PLLN = 432;
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 9; //fixme pllq div for usb and sdmmc2 clock
+	RCC_OscInitStruct.PLL.PLLQ = 9; ///\fixme pllq div for usb and sdmmc2 clock
 	RCC_OscInitStruct.PLL.PLLR = 7;
 
 	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)

@@ -29,22 +29,22 @@
 #define NB_PIXELS_IN_ROI	200
 
 /**
- *	@enum rawParserStateTypedef
+ *	\enum rawParserStateTypedef
  */
 typedef enum _RAWparserState
 {
-	PARSER_RAW_IDLE = 0,
-	PARSER_RAW_CONVERT,
-	PARSER_RAW_WAIT_FOR_FRAME_END,
-	PARSER_RAW_GET_IMG,
+	PARSER_RAW_IDLE = 0,				/**<  */
+	PARSER_RAW_CONVERT,					/**<  */
+	PARSER_RAW_WAIT_FOR_FRAME_END,		/**<  */
+	PARSER_RAW_GET_IMG,					/**<  */
 }rawParserStateTypedef;
 
 /**
- *	@enum rawParserMailStateTypedef
+ *	\enum rawParserMailStateTypedef
  */
 typedef enum _RAWparserMailState{
-	PARSER_RAW_GET_MAIL,
-	PARSER_RAW_PROCESS_MAIL
+	PARSER_RAW_GET_MAIL,				/**<  */
+	PARSER_RAW_PROCESS_MAIL				/**<  */
 }rawParserMailStateTypedef;
 
 

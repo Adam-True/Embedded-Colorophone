@@ -33,7 +33,7 @@ void colourConverter_Init();
 
 
 /*! \fn ycbcr2rgb_SDTV(float32_t y, float32_t cb, float32_t cr)
-    \brief ycbcr2rgb_SDTV This function converts YCbCr to RGB using the SDTV equations. These equations are taken from :
+    \brief This function converts YCbCr to RGB using the SDTV equations. These equations are taken from :
  *	Introduction to video and image processing, Thomas B. Moeslund, ISBN 978-1-4471-2502-0.
     \param y The y component to convert.
     \param cb The cb component to convert.

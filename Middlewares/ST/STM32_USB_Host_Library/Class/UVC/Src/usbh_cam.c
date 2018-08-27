@@ -1,121 +1,8 @@
-/**
-  ******************************************************************************
-  * @file    usbh_cam.c
-  * @author  Colin Cina
-  * @version V1.0.0
-  * @date    01-June-2018
-  * @brief   This file is the CAM Layer Handlers for USB Host CAM class. This is a made up class corresponding to a logitech c920 webcam device. 
-  *          
-  *
-  * @verbatim
-  *      
-  *          ===================================================================      
-  *                                CAM Class  Description
-  *          =================================================================== 
-  *           This module manages custom the CAM class V1.0 based on the "Device Class Definition
-  *           for Video Devices (UVC) Version 1.11 Jun 27, 2001".
-  *           This driver implements the following aspects of the specification:
-  *             - Configuring the device to output a MJPEG video stream
-  *             - Receive the incoming video stream (isochronous transfers) 
-  *         
-  *      
-  *  @endverbatim
-  *
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
-
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_cam.h"
 #include "usbh_cam_def.h"
 #include "main.h"
 
-//maybe include other files of the driver
-
-
-/** @addtogroup USBH_LIB
-* @{
-*/
-
-/** @addtogroup USBH_CLASS
-* @{
-*/
-
-/** @addtogroup USBH_CAM_CLASS
-* @{
-*/
-
-/** @defgroup USBH_CAM_CORE 
-* @brief    This file includes CAM Layer Handlers for USB Host CAM class.
-* @{
-*/ 
-
-/** @defgroup USBH_CAM_CORE_Private_TypesDefinitions
-* @{
-*/ 
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBH_CAM_CORE_Private_Defines
-* @{
-*/ 
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBH_CAM_CORE_Private_Macros
-* @{
-*/ 
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBH_CAM_CORE_Private_Variables
- *
-* @{
-*/
-
-/**
-* @}
-*/ 
-
-
-/** @defgroup USBH_CAM_CORE_Private_FunctionPrototypes
-* @{
-*/ 
-
-/*@brief declared as static because they must only be called from the host core, no
- *further visibility is needed
- */
-static USBH_StatusTypeDef USBH_CAM_InterfaceInit  	(USBH_HandleTypeDef *phost);
-static USBH_StatusTypeDef USBH_CAM_InterfaceDeInit  (USBH_HandleTypeDef *phost);
-static USBH_StatusTypeDef USBH_CAM_ClassRequest		(USBH_HandleTypeDef *phost);
-static USBH_StatusTypeDef USBH_CAM_Process			(USBH_HandleTypeDef *phost);
-static USBH_StatusTypeDef USBH_CAM_SOFProcess		(USBH_HandleTypeDef *phost);
-
-/*@brief Declared as static because only called by functions that are located within this file
- * no further visibility is needed
- */
 
 USBH_ClassTypeDef  CAM_Class = 
 {
@@ -129,22 +16,7 @@ USBH_ClassTypeDef  CAM_Class =
   NULL,
 };
 
-/**
-* @}
-*/ 
 
-
-/** @defgroup USBH_CAM_CORE_Private_Functions
-* @{
-*/ 
-
-
-/**
-  * @brief  USBH_CAM_InterfaceInit 
-  *         The function init the CAM class.
-  * @param  phost: Host handle
-  * @retval USBH Status
-  */
 USBH_StatusTypeDef USBH_CAM_InterfaceInit (USBH_HandleTypeDef *phost)
 {	
   uint8_t max_ep;
@@ -176,7 +48,7 @@ USBH_StatusTypeDef USBH_CAM_InterfaceInit (USBH_HandleTypeDef *phost)
 
     CAM_Handle =  (CAM_HandleTypeDef *) phost->pActiveClass->pData;
 
-    //TODO init these values in a separate function
+    /**\todo init these values in a separate function*/
     CAM_Handle->state = CAM_ERROR;
     CAM_Handle->state = CAM_INIT;
     CAM_Handle->ctl_state = CAM_REQ_INIT;
@@ -184,13 +56,9 @@ USBH_StatusTypeDef USBH_CAM_InterfaceInit (USBH_HandleTypeDef *phost)
     CAM_Handle->getParam_state = CAM_REQ_GET_INIT;
     CAM_Handle->setParam_state = CAM_REQ_SET_INIT;
     CAM_Handle->streamNeg_state = CAM_REQ_STREAM_INIT;
-    CAM_Handle->timer = 0;
-    CAM_Handle->headerOffset = 0xC;
-    CAM_Handle->transferCnt = 0;
-    CAM_Handle->offset = 0;
 
-    /* Register a User Event channel name */
-    //FIXME just for tracing
+    /** Register a User Event channel name */
+    ///\fixme just for tracing
     //CAM_Handle->myChannel = xTraceRegisterString("ADC 1");
 
     //Dummy initialisation of the stream pipe some values might be adjusted later during negotiation
@@ -231,12 +99,7 @@ USBH_StatusTypeDef USBH_CAM_InterfaceInit (USBH_HandleTypeDef *phost)
   return USBH_OK;;
 }
 
-/**
-  * @brief  USBH_CAM_InterfaceDeInit 
-  *         The function DeInit the Pipes used for the CAM class.
-  * @param  phost: Host handle
-  * @retval USBH Status
-  */
+
 USBH_StatusTypeDef USBH_CAM_InterfaceDeInit (USBH_HandleTypeDef *phost )
 {	
   CAM_HandleTypeDef *CAM_Handle =  (CAM_HandleTypeDef *) phost->pActiveClass->pData; 
@@ -251,24 +114,13 @@ USBH_StatusTypeDef USBH_CAM_InterfaceDeInit (USBH_HandleTypeDef *phost )
   return USBH_OK;
 }
 
-/**
-  * @brief  USBH_CAM_ClassRequest 
-  *         The function is responsible for handling Standard requests
-  *         for CAM class.
-  * @param  phost: Host handle
-  * @retval USBH Status
-  */
+
 USBH_StatusTypeDef USBH_CAM_ClassRequest(USBH_HandleTypeDef *phost)
 {
 	return USBH_OK;
 }
 
-/**
-  * @brief  USBH_CAM_Process 
-  *         The function is for managing state machine for CAM data transfers 
-  * @param  phost: Host handle
-  * @retval USBH Status
-  */
+
 USBH_StatusTypeDef USBH_CAM_Process(USBH_HandleTypeDef *phost)
 {
   USBH_StatusTypeDef status = USBH_OK;
@@ -352,12 +204,7 @@ USBH_StatusTypeDef USBH_CAM_Process(USBH_HandleTypeDef *phost)
 	return status;
 }
 
-/**
-  * @brief  USBH_CAM_SOFProcess 
-  *         The function is for managing the SOF Process 
-  * @param  phost: Host handle
-  * @retval USBH Status
-  */
+
 USBH_StatusTypeDef USBH_CAM_SOFProcess(USBH_HandleTypeDef *phost)
 {
 	CAM_HandleTypeDef* CAM_Handle =  (CAM_HandleTypeDef *) phost->pActiveClass->pData;
@@ -1624,26 +1471,3 @@ USBH_StatusTypeDef USBH_CAM_ConfigDevice(USBH_HandleTypeDef* phost, CAM_HandleTy
 	return status;
 }
 
-/**
-* @}
-*/ 
-
-/**
-* @}
-*/ 
-
-/**
-* @}
-*/
-
-
-/**
-* @}
-*/
-
-
-/**
-* @}
-*/
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

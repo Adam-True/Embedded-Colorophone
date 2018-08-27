@@ -562,7 +562,7 @@ USBH_StatusTypeDef USBH_CtlReq     (USBH_HandleTypeDef *phost,
       phost->RequestState = CMD_SEND;
       status = USBH_FAIL;
     }
-    //fixme just a test
+
     else if (status == USBH_NOT_SUPPORTED)
     {
       /* Failure Mode */

@@ -24,13 +24,13 @@
  */
 
 /**
- * 	@struct AudioSample
+ * 	\struct
  */
 typedef struct AudioSample_s
 {
-	audio_length length;
-	audio_length index;
-    audio_data* data;
+	audio_length length;  	/**<  Text here */
+	audio_length index;  	/**<  Text here */
+    audio_data* data; 		/**<  Text here */
 } AudioSample;
 
 // Method for the creation of an audio sample

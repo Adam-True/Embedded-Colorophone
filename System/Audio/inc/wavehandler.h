@@ -14,11 +14,16 @@
 #define SECTOR_SIZE 4096
 #define NUMBER_OF_TRIES 6
 
+
+/**
+ * 	\struct
+ * 	\brief Text here
+ */
 typedef struct WaveHandler_s
 {
-	char fileName[15];
-	uint32_t fileSize;
-	uint32_t bytesRead;
+	char fileName[15]; 		/**< Text here  */
+	uint32_t fileSize; 		/**< Text here*/
+	uint32_t bytesRead;		/**< Text here */
 
 	uint8_t* currentSector;
 	uint32_t index;
